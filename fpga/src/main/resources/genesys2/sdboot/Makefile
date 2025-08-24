@@ -13,14 +13,14 @@ LFLAGS=-static -Wl,-gc-sections -nostdlib -L $(ROOT_DIR)/linker -T sdboot.elf.ld
 # -mabi=lp64d for fpu
 # -march=rv64gcv_zicsr_zifencei for vector
 #PBUS_CLK ?= 1000000 # default to 1MHz but really should be overridden
-PBUS_CLK ?= 50000000 # default to 1MHz but really should be overridden
+PBUS_CLK ?= 50000000 # default to 1MHz but really should be overridden 50MHZ PBUS clock
 
 default: elf bin dump
 
 elf := $(BUILD_DIR)/sdboot.elf
 $(elf): head.S kprintf.c sd.c output.dtb #這樣 make 才知道當 output.dtb 改變時要重編 sdboot.elf。
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -DTL_CLK="$(PBUS_CLK)" $(LFLAGS) -o $@ head.S sd_v1.c kprintf.c $(ROOT_DIR)/driver/uart.c
+	$(CC) $(CFLAGS) -DTL_CLK="$(PBUS_CLK)" $(LFLAGS) -o $@ head_nodtb.S sd_speedup.c kprintf.c $(ROOT_DIR)/driver/uart.c
 # $(CC) $(CFLAGS) -DTL_CLK="$(PBUS_CLK)" $(LFLAGS) -o $@ head.S sd.c kprintf.c $(ROOT_DIR)/driver/uart.c #$(ROOT_DIR)/driver/spi.c
 
 .PHONY: elf
