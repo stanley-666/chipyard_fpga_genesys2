@@ -126,16 +126,17 @@ class GENESYS2FPGATestHarnessImp(_outer: GENESYS2FPGATestHarness) extends LazyRa
   _outer.sdc.addAsyncPath(Seq(powerOnReset))
 
   //有chiplink
+  /*
   val ereset: Bool = _outer.chiplink.get() match {
     case Some(x: ChipLinkGENESYS2PlacedOverlay) => !x.ereset_n
     case _ => false.B
   }
-
-  _outer.pllReset := (resetIBUF.io.O || powerOnReset || ereset)
   
+  _outer.pllReset := (resetIBUF.io.O || powerOnReset || ereset)
+  */
 
   // 沒chiplink
-  //_outer.pllReset := (resetIBUF.io.O || powerOnReset)
+  _outer.pllReset := (resetIBUF.io.O || powerOnReset)
 
   // reset setup
   val hReset = Wire(Reset())
