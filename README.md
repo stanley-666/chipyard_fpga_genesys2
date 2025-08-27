@@ -65,3 +65,5 @@ echo "  Please open hardware manager to program $dest_dir/$CONFIG.bit"
 echo "==================================================="
 
 ```
+
+and if you want to build and run riscv system with Linux, please go to my u-boot, opensbi repos for more details!
