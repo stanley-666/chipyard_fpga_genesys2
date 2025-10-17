@@ -1,0 +1,178 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <1>;
+	#size-cells = <1>;
+	compatible = "ucb-bar,chipyard-dev";
+	model = "ucb-bar,chipyard";
+	L3: aliases {
+		serial0 = &L25;
+	};
+	L17: chosen {
+		stdout-path = &L25;
+	};
+	L2: cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		timebase-frequency = <90000>;
+		L14: cpu@0 {
+			clock-frequency = <0>;
+			compatible = "sifive,rocket0", "riscv";
+			d-cache-block-size = <64>;
+			d-cache-sets = <64>;
+			d-cache-size = <32768>;
+			d-tlb-sets = <1>;
+			d-tlb-size = <32>;
+			device_type = "cpu";
+			hardware-exec-breakpoint-count = <1>;
+			i-cache-block-size = <64>;
+			i-cache-sets = <64>;
+			i-cache-size = <32768>;
+			i-tlb-sets = <1>;
+			i-tlb-size = <32>;
+			mmu-type = "riscv,sv39";
+			next-level-cache = <&L11>;
+			reg = <0x0>;
+			riscv,isa = "rv64imafdcbzicsr_zifencei_zihpm_zfh_zba_zbb_zbs_xrocket";
+			riscv,pmpgranularity = <4>;
+			riscv,pmpregions = <8>;
+			status = "okay";
+			timebase-frequency = <90000>;
+			tlb-split;
+			L12: interrupt-controller {
+				#interrupt-cells = <1>;
+				compatible = "riscv,cpu-intc";
+				interrupt-controller;
+			};
+		};
+	};
+	L19: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+	opensbi_reserved: region@80000000 {
+			reg = <0x80000000 0x00060000>; // 384 KB, OpenSBI + RW/heap
+			no-map;
+		};
+	};
+
+
+	L1: soc {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "ucb-bar,chipyard-soc", "simple-bus";
+		ranges;
+		L23: boot-address-reg@1000 {
+			reg = <0x1000 0x1000>;
+			reg-names = "control";
+		};
+		L11: cache-controller@2010000 {
+			cache-block-size = <64>;
+			cache-level = <2>;
+			cache-sets = <1024>;
+			cache-size = <524288>;
+			cache-unified;
+			compatible = "sifive,inclusivecache0", "cache";
+			next-level-cache = <&L19>;
+			reg = <0x2010000 0x1000>;
+			reg-names = "control";
+			sifive,mshr-count = <7>;
+		};
+		L8: cbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <90000000>;
+			clock-output-names = "cbus_clock";
+			compatible = "fixed-clock";
+		};
+		L15: clint@2000000 {
+			compatible = "riscv,clint0";
+			interrupts-extended = <&L12 3 &L12 7>;
+			reg = <0x2000000 0x10000>;
+			reg-names = "control";
+		};
+		L27: clock-gater@100000 {
+			reg = <0x100000 0x1000>;
+			reg-names = "control";
+		};
+		L9: error-device@3000 {
+			compatible = "sifive,error0";
+			reg = <0x3000 0x1000>;
+		};
+		L7: fbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <90000000>;
+			clock-output-names = "fbus_clock";
+			compatible = "fixed-clock";
+		};
+		L16: interrupt-controller@c000000 {
+			#interrupt-cells = <1>;
+			compatible = "riscv,plic0";
+			interrupt-controller;
+			interrupts-extended = <&L12 11 &L12 9>;
+			reg = <0xc000000 0x4000000>;
+			reg-names = "control";
+			riscv,max-priority = <3>;
+			riscv,ndev = <2>;
+		};
+		L10: mbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <90000000>;
+			clock-output-names = "mbus_clock";
+			compatible = "fixed-clock";
+		};
+		L6: pbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <90000000>;
+			clock-output-names = "pbus_clock";
+			compatible = "fixed-clock";
+		};
+		L22: rom@10000 {
+			compatible = "sifive,rom0";
+			reg = <0x10000 0x10000>;
+			reg-names = "mem";
+		};
+		L5: sbus_clock {
+			#clock-cells = <0>;
+			clock-frequency = <90000000>;
+			clock-output-names = "sbus_clock";
+			compatible = "fixed-clock";
+		};
+		L25: serial@64000000 {
+			clocks = <&L6>;
+			compatible = "sifive,uart0";
+			interrupt-parent = <&L16>;
+			interrupts = <1>;
+			reg = <0x64000000 0x1000>;
+			reg-names = "control";
+		};
+		L26: spi@64001000 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&L6>;
+			compatible = "sifive,spi0";
+			interrupt-parent = <&L16>;
+			interrupts = <2>;
+			reg = <0x64001000 0x1000>;
+			reg-names = "control";
+			L29: mmc@0 {
+				compatible = "mmc-spi-slot";
+				disable-wp;
+				broken-cd;
+				non-removable;
+				reg = <0x0>;
+				spi-max-frequency = <25000000>;
+				voltage-ranges = <3300 3300>;
+			};
+		};
+		L28: tile-reset-setter@110000 {
+			reg = <0x110000 0x1000>;
+			reg-names = "control";
+		};
+	};
+};
