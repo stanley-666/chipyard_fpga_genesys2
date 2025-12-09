@@ -4,6 +4,21 @@ version: chipyard v1.13.0
 * first setup chipyard fpga path (see the instruction from chipyard doc first)
 * second overwrite build.sbt, fpga directory
 
+# Attribution and Chipyard-related Publications
+
+```
+@article{chipyard,
+  author={Amid, Alon and Biancolin, David and Gonzalez, Abraham and Grubb, Daniel and Karandikar, Sagar and Liew, Harrison and Magyar,   Albert and Mao, Howard and Ou, Albert and Pemberton, Nathan and Rigge, Paul and Schmidt, Colin and Wright, John and Zhao, Jerry and Shao, Yakun Sophia and Asanovi\'{c}, Krste and Nikoli\'{c}, Borivoje},
+  journal={IEEE Micro},
+  title={Chipyard: Integrated Design, Simulation, and Implementation Framework for Custom SoCs},
+  year={2020},
+  volume={40},
+  number={4},
+  pages={10-21},
+  doi={10.1109/MM.2020.2996616},
+  ISSN={1937-4143},
+}
+```
 
 ## Intro
 
