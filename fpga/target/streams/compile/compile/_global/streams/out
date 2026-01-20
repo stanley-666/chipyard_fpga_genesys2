@@ -1,5 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/stanley/chipyard_1.13.0/chipyard/fpga/src/main/scala/genesys2/Configs.scala:8:8: object BootRAMLocated is not a member of package freechips.rocketchip.devices.tilelink[0m
-[0m[[0m[31merror[0m] [0m[0mdid you mean BootROMLocated?[0m
-[0m[[0m[31merror[0m] [0m[0mimport freechips.rocketchip.devices.tilelink.{DevNullParams, BootROMLocated, BootRAMLocated}[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
