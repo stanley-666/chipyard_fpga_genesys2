@@ -41,67 +41,7 @@ fpga/
 fpga-shells/
 ```
 ---
-## Build Bitstream with Zero-Stage Bootloader
-After the Genesys2 files are placed under fpga/ and fpga-shells/, the following script can be used as a build helper.
 
-The script performs the following steps:
-
-Builds the zero-stage SD bootloader.
-Generates the FPGA bitstream.
-Copies the generated bitstream.
-Exports the generated DTS file.
-Compiles DTS to DTB if dtc is available.
-
-You may modify the paths, configuration name, and peripheral bus clock according to your local Chipyard setup.
-```bash!
-#!/home/stanley/chipyard_1.13.0/chipyard/.conda-env/bin/bash
-set -e
-
-chipyard_root="$HOME/chipyard_1.13.0/chipyard"
-CONFIG="Rocket90MHZ"
-PBUS_CLK=90000000
-
-generated_dir="$chipyard_root/fpga/generated-src/chipyard.fpga.genesys2.GENESYS2FPGATestHarness.$CONFIG"
-dest_dir="$chipyard_root/fpga/bitstream_copy"
-dts_dir="$chipyard_root/fpga/dts_copy"
-echo "Script to build bootrom of zero stage bootloader for Rocket Chip on the Genesys2 FPGA board"
-
-cd $chipyard_root
-source env.sh
-
-# build sdboot
-cd $chipyard_root/fpga/src/main/resources/genesys2/sdboot
-make clean
-make PBUS_CLK=$PBUS_CLK
-
-# build bitstream
-cd $chipyard_root/fpga
-make clean
-make CONFIG=$CONFIG bitstream -j16
-
-# copy bitstream, dts
-mkdir -p $dest_dir
-mkdir -p $dts_dir
-cp $generated_dir/obj/*.bit $dest_dir/$CONFIG.bit
-cp $generated_dir/*.dts $dts_dir/$CONFIGz.dts
-
-# compile dts -> dtb
-if command -v dtc >/dev/null 2>&1; then
-    dtc -I dts -O dtb -o $dts_dir/$CONFIG.dtb $dts_dir/$CONFIG.dts
-    echo "DTB compiled: $dts_dir/$CONFIG.dtb"
-else
-    echo "WARNING: dtc not found in PATH, cannot compile DTS to DTB."
-fi
-
-echo "==================================================="
-echo "Done building bitstream."
-echo "Bitstream copied to: $dest_dir/$CONFIG.bit"
-echo "DTS/DTB saved to: $dts_dir/$CONFIG.dts / $dts_dir/$CONFIG.dtb"
-echo "Now program the FPGA with:"
-echo "  Please open hardware manager to program $dest_dir/$CONFIG.bit"
-echo "==================================================="
-
-```
 # Attribution and Chipyard-related Publications
 This project is derived from and designed to work with the Chipyard / SiFive FPGA shell ecosystem. Original copyrights and licenses remain with their respective upstream authors.
 If you use this repository, the Genesys2 FPGA shell modifications, the board integration flow, or the build scripts in academic work, please cite the related Chipyard publication and this repository.
