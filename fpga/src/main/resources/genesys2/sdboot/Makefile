@@ -18,7 +18,7 @@ PBUS_CLK ?= 50000000 # default to 1MHz but really should be overridden 50MHZ PBU
 default: elf bin dump
 
 elf := $(BUILD_DIR)/sdboot.elf
-$(elf): head.S kprintf.c sd.c output.dtb #這樣 make 才知道當 output.dtb 改變時要重編 sdboot.elf。
+$(elf): head_nodtb.S kprintf.c sd_speedup.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -DTL_CLK="$(PBUS_CLK)" $(LFLAGS) -o $@ head_nodtb.S sd_speedup.c kprintf.c $(ROOT_DIR)/driver/uart.c
 # $(CC) $(CFLAGS) -DTL_CLK="$(PBUS_CLK)" $(LFLAGS) -o $@ head.S sd.c kprintf.c $(ROOT_DIR)/driver/uart.c #$(ROOT_DIR)/driver/spi.c

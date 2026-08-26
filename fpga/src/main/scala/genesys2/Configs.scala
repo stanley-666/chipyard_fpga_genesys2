@@ -32,17 +32,16 @@ class WithDefaultPeripherals extends Config((site, here, up) => {
 })
 
 class WithSystemModifications extends Config((site, here, up) => {
-  //case PeripheryBusKey => up(PeripheryBusKey, site).copy(dtsFrequency = Some(site(FPGAFrequencyKey).toInt*1000000))
   case DTSTimebase => BigInt((1e6).toLong)
-  case BootROMLocated(x) => up(BootROMLocated(x), site).map { p =>
-    // invoke makefile for sdboot
+  case BootROMLocated(x) => up(BootROMLocated(x)).map { p =>
     val freqMHz = (site(SystemBusKey).dtsFrequency.get / (1000 * 1000)).toLong
-    val make = s"make -C fpga/src/main/resources/genesys2/sdboot PBUS_CLK=${freqMHz} bin"
-    require (make.! == 0, "Failed to build bootrom")
-    p.copy(hang = 0x10000, contentFileName = s"./fpga/src/main/resources/genesys2/sdboot/build/sdboot.bin")
+    val make = s"make -C fpga/src/main/resources/genesys2/sdboot PBUS_CLK=${freqMHz*1000000} bin"
+    println(s"Building bootrom with PBUS_CLK=${freqMHz*1000000}")
+    require(make.! == 0, "Failed to build bootrom")
+    p.copy(hang = 0x10000, contentFileName = "./fpga/src/main/resources/genesys 2/sdboot/build/sdboot.bin")
   }
-  case ExtMem => up(ExtMem, site).map(x => x.copy(master = x.master.copy(size = site(GENESYS2DDRSize)))) // set extmem to DDR size
-  case SerialTLKey => Nil // remove serialized tl port
+  case ExtMem => up(ExtMem).map(x => x.copy(master = x.master.copy(size = site(GENESYS2DDRSize))))
+  case SerialTLKey => Nil
 })
 
 // DOC include start: AbstractGENESYS2 and Rocket
@@ -64,7 +63,6 @@ class WithGENESYS2Tweaks extends Config(
   new chipyard.config.WithNoDebug ++ // remove debug module
   new freechips.rocketchip.subsystem.WithoutTLMonitors ++
   new freechips.rocketchip.subsystem.WithNMemoryChannels(1))
-
 
 class LargeNVDLARocketGENESYS2Config extends Config(
   new nvidia.blocks.dla.WithNVDLA("large", true) ++  
@@ -105,13 +103,7 @@ class WithFPGAFrequency(fMHz: Double) extends Config(
   new chipyard.config.WithMemoryBusFrequency(fMHz)
 )
 
-// test bugs config
 
-class TESTSDGENESYS2Config extends Config(
-  new WithFPGAFrequency(50) ++
-  new WithGENESYS2Tweaks ++
-  new chipyard.RocketConfig
-)
 
 // for spike or verilator simulation config
 
